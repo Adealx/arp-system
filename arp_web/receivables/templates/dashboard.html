@@ -58,6 +58,14 @@
     </button>
 </form>
 
+<a href="/export/">
+    <button>Export CSV</button>
+</a>
+
+<a href="/pdf/">
+    <button>Download PDF Report</button>
+</a>
+
     <h2>Add Customer</h2>
     <form method="POST">
         {% csrf_token %}
@@ -164,6 +172,37 @@
 {% endfor %}
 
     </table>
+<h2>Debt Analytics</h2>
 
+<canvas id="debtChart" width="400" height="150"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const outstanding = Number("{{ total_outstanding }}");
+const customers = Number("{{ total_customers }}");
+
+const ctx = document.getElementById('debtChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Outstanding Debt', 'Customers'],
+        datasets: [{
+            label: 'Accounts Overview',
+            data: [outstanding, customers]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'ARP Financial Analytics'
+            }
+        }
+    }
+});
+</script>
 </body>
 </html>

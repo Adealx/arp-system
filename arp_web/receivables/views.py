@@ -1,65 +1,64 @@
-from django.contrib.auth.decorators import login_required
+import csv
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.db.models import Sum
+from reportlab.pdfgen import canvas
+
 from .models import Customer
 from .forms import CustomerForm
-from django.db import models
-import csv
-from django.http import HttpResponse
 
-@login_required
+
 def dashboard(request):
-    search_query = request.GET.get('search', '')
-    customers = Customer.objects.filter(name__icontains=search_query)
+    search_query = request.GET.get('search')
+
+    if search_query:
+        customers = Customer.objects.filter(name__icontains=search_query)
+    else:
+        customers = Customer.objects.all()
 
     form = CustomerForm()
 
     if request.method == 'POST':
 
-        if 'delete_customer' in request.POST:
-            customer_id = request.POST.get('customer_id')
-            Customer.objects.get(id=customer_id).delete()
-            return redirect('/')
-
-        elif 'edit_customer' in request.POST:
-            customer_id = request.POST.get('customer_id')
-            invoice = int(request.POST.get('invoice'))
-            paid = int(request.POST.get('paid'))
-
-            customer = Customer.objects.get(id=customer_id)
-            customer.invoice = invoice
-            customer.paid = paid
-            customer.save()
-            return redirect('/')
-
-        elif 'record_payment' in request.POST:
-            name = request.POST.get('customer_name')
-            payment = int(request.POST.get('payment'))
-
-            customer = Customer.objects.get(name=name)
-            customer.paid += payment
-            customer.save()
-            return redirect('/')
-
-        else:
+        if 'add_customer' in request.POST:
             form = CustomerForm(request.POST)
-
             if form.is_valid():
                 form.save()
                 return redirect('/')
 
+        elif 'record_payment' in request.POST:
+            customer_name = request.POST.get('customer_name')
+            payment = request.POST.get('payment')
+
+            try:
+                customer = Customer.objects.get(name=customer_name)
+                customer.paid += int(payment)
+                customer.save()
+            except:
+                pass
+
+            return redirect('/')
+
+        elif 'delete_customer' in request.POST:
+            customer_id = request.POST.get('customer_id')
+            Customer.objects.get(id=customer_id).delete()
+            return redirect('/')
+
     total_outstanding = sum(customer.balance for customer in customers)
     total_customers = customers.count()
-    fully_paid = customers.filter(invoice__lte=models.F('paid')).count()
+    fully_paid = customers.filter(invoice__lte=0).count()
     owing_customers = total_customers - fully_paid
 
-    return render(request, 'dashboard.html', {
+    context = {
         'customers': customers,
         'form': form,
         'total_outstanding': total_outstanding,
         'total_customers': total_customers,
         'fully_paid': fully_paid,
-        'owing_customers': owing_customers
-    })
+        'owing_customers': owing_customers,
+    }
+
+    return render(request, 'dashboard.html', context)
 
 
 def export_csv(request):
@@ -79,5 +78,28 @@ def export_csv(request):
             customer.balance,
             customer.created_at
         ])
+
+    return response
+
+
+def export_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="customers.pdf"'
+
+    p = canvas.Canvas(response)
+
+    y = 800
+    p.drawString(100, y, "Accounts Receivable Report")
+
+    customers = Customer.objects.all()
+
+    y -= 40
+
+    for customer in customers:
+        line = f"{customer.name} | Invoice: {customer.invoice} | Paid: {customer.paid} | Balance: {customer.balance}"
+        p.drawString(50, y, line)
+        y -= 30
+
+    p.save()
 
     return response
