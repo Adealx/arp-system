@@ -123,7 +123,7 @@ STATIC_URL = 'static/'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL') == 'True'
