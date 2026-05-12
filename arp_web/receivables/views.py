@@ -1,12 +1,13 @@
 import csv
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 
 from .models import Customer
 from .forms import CustomerForm
+
 
 
 def dashboard(request):
