@@ -5,4 +5,4 @@ from .models import Customer
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['name', 'invoice', 'paid']
+        fields = ['name', 'email', 'invoice']

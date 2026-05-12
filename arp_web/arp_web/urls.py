@@ -2,12 +2,14 @@ from django.contrib import admin
 from django.urls import path
 from receivables.views import dashboard, export_csv, export_pdf
 from django.contrib.auth import views as auth_views
+from receivables.views import dashboard, export_csv, export_pdf, send_reminder
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', dashboard, name='dashboard'),
     path('export/', export_csv, name='export_csv'),
     path('pdf/', export_pdf, name='export_pdf'),
+    path('remind/<int:customer_id>/', send_reminder, name='send_reminder'),
 
     path(
         'login/',
