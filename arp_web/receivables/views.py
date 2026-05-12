@@ -4,12 +4,13 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
+from django.contrib.auth.decorators import login_required
 
 from .models import Customer
 from .forms import CustomerForm
 
 
-
+@login_required
 def dashboard(request):
     search_query = request.GET.get('search')
 
