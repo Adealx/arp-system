@@ -2,6 +2,7 @@ import csv
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.core.mail import send_mail
+from django.conf import settings
 from reportlab.pdfgen import canvas
 
 from .models import Customer
@@ -106,9 +107,15 @@ def export_pdf(request):
 def send_reminder(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
 
-    return HttpResponse(
-        f"Reminder triggered for {customer.name} ({customer.email})"
+    send_mail(
+        'Payment Reminder',
+        f'Dear {customer.name}, your outstanding balance is {customer.balance}. Kindly make payment.',
+        settings.EMAIL_HOST_USER,
+        [customer.email],
+        fail_silently=False,
     )
+
+    return HttpResponse("Reminder email sent successfully!")
 
     send_mail(
         'Payment Reminder',
