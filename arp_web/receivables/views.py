@@ -117,12 +117,3 @@ def send_reminder(request, customer_id):
 
     return HttpResponse("Reminder email sent successfully!")
 
-    send_mail(
-        'Payment Reminder',
-        f'Dear {customer.name}, your outstanding balance is {customer.balance}. Kindly make payment.',
-        'admin@arp.com',
-        [customer.email],
-        fail_silently=True,
-    )
-
-    return HttpResponse("Reminder email sent successfully!")
