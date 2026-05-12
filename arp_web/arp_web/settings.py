@@ -23,9 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-8mrm44)qna(u)+k557#_x1c_@^rs2^_x&^&%sjuz&ct&l@r31)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DDEBUG = False
 
-ALLOWED_HOSTS = ['10.58.122.68', '127.0.0.1', 'localhost', '*']
+ALLOWED_HOSTS = [
+    'arp-system-fth8.onrender.com',
+    '127.0.0.1',
+    'localhost',
+]
 
 
 # Application definition
@@ -119,7 +123,7 @@ STATIC_URL = 'static/'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EEMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL') == 'True'
